@@ -36,7 +36,6 @@ test.group('User', (group) => {
         password: 'test',
       })
       .expect(409)
-    console.log({ body })
 
     assert.exists(body.message)
     assert.exists(body.code)
@@ -46,7 +45,7 @@ test.group('User', (group) => {
     assert.equal(body.status, 409)
   })
 
-  test.only('it shoud return 409 when the username is already in use by someone else', async (assert) => {
+  test('it shoud return 409 when the username is already in use by someone else', async (assert) => {
     const { username } = await UserFactory.create()
 
     const { body } = await supertest(BASE_URL)
@@ -58,14 +57,27 @@ test.group('User', (group) => {
       })
       .expect(409)
 
-    console.log({ body })
-
     assert.exists(body.message)
     assert.exists(body.code)
     assert.exists(body.status)
-    assert.include(body.message, 'username')
+    assert.include(body.message, 'username') //include veficica se contém a palavra
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 409)
+  })
+
+  test.only('it should return 422 when required data is not provided.', async (assert) => {
+    const { body } = await supertest(BASE_URL)
+      .post('/users')
+      .send({
+        email: 'teste@teste.com',
+        username: 'teste',
+        //needed: password: 'password123'
+      })
+      .expect(422)
+    console.log({ body })
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
   })
 
   //Antes de cada teste, ele inicia uma transaction no BD.

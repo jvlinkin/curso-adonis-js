@@ -7,6 +7,10 @@ export default class UsersController {
   public async store({ request, response }: HttpContextContract) {
     //request.all() para retornar tudo
     const userPayLoad = request.only(['email', 'username', 'password', 'avatar'])
+    //verificando dados vindo da request:
+    if (!userPayLoad.email || !userPayLoad.username || !userPayLoad.password) {
+      throw new BadRequest('provide required data', 422)
+    }
 
     //findBy, onde todos os campos 'email' sejam iguais ao userPayload.email
     const userByEmail = await User.findBy('email', userPayLoad.email)
