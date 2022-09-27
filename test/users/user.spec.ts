@@ -77,7 +77,39 @@ test.group('User', (group) => {
       })
       .expect(422)
 
-    console.log({ body: JSON.stringify(body) })
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when providing an invalid email.', async (assert) => {
+    const { username, avatar, password } = await UserFactory.create()
+
+    const { body } = await supertest(BASE_URL)
+      .post('/users')
+      .send({
+        email: 'jkdhsjdhasjda@',
+        username,
+        avatar,
+        password,
+      })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when providing an invalid password.', async (assert) => {
+    const { username, avatar, email } = await UserFactory.create()
+
+    const { body } = await supertest(BASE_URL)
+      .post('/users')
+      .send({
+        email,
+        username,
+        avatar,
+        password: '123',
+      })
+      .expect(422)
 
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)

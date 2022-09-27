@@ -24,7 +24,7 @@ export default class ExceptionHandler extends HttpExceptionHandler {
   }
 
   public async handle(error: Exception, ctx: HttpContext) {
-    console.log({ error: JSON.stringify(error) })
+    //console.log({ error: JSON.stringify(error) })
     if (error.status === 422) {
       return ctx.response.status(error.status).send({
         code: 'BAD_REQUEST',
