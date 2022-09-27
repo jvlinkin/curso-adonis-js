@@ -1,16 +1,13 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequest from 'App/Exceptions/BadRequestException'
 import User from 'App/Models/User'
-import test from 'japa'
+import CreateUserValidator from 'App/Validators/CreateUserValidator'
 
 export default class UsersController {
   public async store({ request, response }: HttpContextContract) {
     //request.all() para retornar tudo
-    const userPayLoad = request.only(['email', 'username', 'password', 'avatar'])
+    const userPayLoad = await request.validate(CreateUserValidator)
     //verificando dados vindo da request:
-    if (!userPayLoad.email || !userPayLoad.username || !userPayLoad.password) {
-      throw new BadRequest('provide required data', 422)
-    }
 
     //findBy, onde todos os campos 'email' sejam iguais ao userPayload.email
     const userByEmail = await User.findBy('email', userPayLoad.email)
