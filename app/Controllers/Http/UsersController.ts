@@ -1,3 +1,4 @@
+import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequest from 'App/Exceptions/BadRequestException'
 import User from 'App/Models/User'
@@ -29,7 +30,7 @@ export default class UsersController {
     //Pegando os dados do corpo da requsição
     //const userPayLoad = request.only(['email, avatar, password'])
     const id = request.param('id')
-    const { email, avatar, password } = request.all()
+    const { email, avatar, password } = await request.validate(UpdateUserValidator)
 
     const user = await User.findOrFail(id)
 

@@ -132,15 +132,13 @@ test.group('Users', (group) => {
       })
       .expect(200)
 
-    console.log(body)
-
     assert.exists(body.user, 'User undefined')
     assert.equal(body.user.id, id)
     assert.equal(body.user.email, email)
     assert.equal(body.user.avatar, avatar)
   })
 
-  test.only('it should update the user password', async (assert) => {
+  test('it should update the user password', async (assert) => {
     const user = await UserFactory.create()
     const password = 'test'
 
@@ -161,6 +159,15 @@ test.group('Users', (group) => {
     await user.refresh()
 
     assert.isTrue(await Hash.verify(user.password, password))
+  })
+
+  test('it should return 422 when required data is not provided.', async (assert) => {
+    const { id } = await UserFactory.create()
+
+    const { body } = await supertest(BASE_URL).put(`/users/${id}`).send({}).expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
   })
 
   //before each test, it begins a new transaction.
