@@ -170,6 +170,62 @@ test.group('Users', (group) => {
     assert.equal(body.status, 422)
   })
 
+  test('it should return 422 when providing an invalid email to update', async (assert) => {
+    const userDatabase = await UserFactory.create()
+
+    const email = 'teste@'
+    const password = '12345'
+
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${userDatabase.id}`)
+      .send({
+        email,
+        password,
+      })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when providing an invalid password to update', async (assert) => {
+    const userDatabase = await UserFactory.create()
+
+    const email = 'teste@hotmail.com'
+    const password = '123'
+
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${userDatabase.id}`)
+      .send({
+        email,
+        password,
+      })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when providing an invalid avatar to update', async (assert) => {
+    const userDatabase = await UserFactory.create()
+
+    const email = 'teste@hotmail.com'
+    const password = '123456'
+    const avatar = 'http://www.g'
+
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${userDatabase.id}`)
+      .send({
+        email,
+        password,
+        avatar,
+      })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
   //before each test, it begins a new transaction.
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
