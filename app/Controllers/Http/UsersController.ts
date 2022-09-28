@@ -24,4 +24,24 @@ export default class UsersController {
     const user = await User.create(userPayLoad)
     return response.created({ user })
   }
+
+  public async update({ request, response }: HttpContextContract) {
+    //Pegando os dados do corpo da requsição
+    //const userPayLoad = request.only(['email, avatar, password'])
+    const id = request.param('id')
+    const { email, avatar, password } = request.all()
+
+    const user = await User.findOrFail(id)
+
+    user.email = email
+    user.password = password
+
+    if (avatar) {
+      user.avatar = avatar
+    }
+
+    await user.save()
+
+    return response.ok({ user })
+  }
 }

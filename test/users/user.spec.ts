@@ -115,6 +115,30 @@ test.group('User', (group) => {
     assert.equal(body.status, 422)
   })
 
+  test.only('it should update an user.', async (assert) => {
+    //Banco de dados Fake
+    const { id, password } = await UserFactory.create()
+
+    const email = 'emailteste123@hotmail.com'
+    const avatar = 'http://www.imagem.com/avatar323.png'
+
+    const { body } = await supertest(BASE_URL)
+      .put(`/users/${id}`)
+      .send({
+        email,
+        avatar,
+        password,
+      })
+      .expect(200)
+
+    console.log(body)
+
+    assert.exists(body.user, 'User undefined')
+    assert.equal(body.user.id, id)
+    assert.equal(body.user.email, email)
+    assert.equal(body.user.avatar, avatar)
+  })
+
   //before each test, it begins a new transaction.
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
