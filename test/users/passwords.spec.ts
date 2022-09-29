@@ -1,32 +1,34 @@
 import { UserFactory } from 'Database/factories'
 import Database from '@ioc:Adonis/Lucid/Database'
-import test, { group } from 'japa'
+import test from 'japa'
 import supertest from 'supertest'
 import Mail from '@ioc:Adonis/Addons/Mail'
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 
 test.group('Password', (group) => {
-  test.only('it should send an email with the forgot password instructions', async (assert) => {
-    const user = await UserFactory.create()
+  test
+    .only('it should send an email with the forgot password instructions', async (assert) => {
+      const user = await UserFactory.create()
 
-    Mail.trap((message) => {
-      assert.deepEqual(message.from, { address: 'no-reply@api.com' })
-      assert.deepEqual(message.to, [{ address: user.email }])
-      assert.equal(message.subject, 'API: Recuperação de senha.')
-      assert.equal(message.text, 'Clique no link para redefinir sua senha.')
-    })
-
-    await supertest(BASE_URL)
-      .post('/forgot-password')
-      .send({
-        email: user.email,
-        resetPasswordUrl: 'url',
+      Mail.trap((message) => {
+        assert.deepEqual(message.from, { address: 'no-reply@api.com' })
+        assert.deepEqual(message.to, [{ address: user.email }])
+        assert.equal(message.subject, 'API: Recuperação de senha.')
+        assert.include(message.html!, user.username)
       })
-      .expect(204)
 
-    Mail.restore()
-  })
+      await supertest(BASE_URL)
+        .post('/forgot-password')
+        .send({
+          email: user.email,
+          resetPasswordUrl: 'url',
+        })
+        .expect(204)
+
+      Mail.restore()
+    })
+    .timeout(0)
 
   //before each test, it begins a new transaction.
   group.beforeEach(async () => {
