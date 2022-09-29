@@ -11,7 +11,10 @@ test.group('Password', (group) => {
     const user = await UserFactory.create()
 
     Mail.trap((message) => {
+      assert.deepEqual(message.from, { address: 'no-reply@api.com' })
+      assert.deepEqual(message.to, [{ address: user.email }])
       assert.equal(message.subject, 'API: Recuperação de senha.')
+      assert.equal(message.text, 'Clique no link para redefinir sua senha.')
     })
 
     await supertest(BASE_URL)
@@ -21,9 +24,9 @@ test.group('Password', (group) => {
         resetPasswordUrl: 'url',
       })
       .expect(204)
-  })
 
-  Mail.restore()
+    Mail.restore()
+  })
 
   //before each test, it begins a new transaction.
   group.beforeEach(async () => {
