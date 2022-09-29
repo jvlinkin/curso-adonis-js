@@ -10,6 +10,10 @@ test.group('Password', (group) => {
   test.only('it should send an email with the forgot password instructions', async (assert) => {
     const user = await UserFactory.create()
 
+    Mail.trap((message) => {
+      assert.equal(message.subject, 'API: Recuperação de senha.')
+    })
+
     await supertest(BASE_URL)
       .post('/forgot-password')
       .send({
@@ -18,6 +22,8 @@ test.group('Password', (group) => {
       })
       .expect(204)
   })
+
+  Mail.restore()
 
   //before each test, it begins a new transaction.
   group.beforeEach(async () => {
