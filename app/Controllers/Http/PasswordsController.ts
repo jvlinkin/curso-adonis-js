@@ -38,10 +38,12 @@ export default class PasswordsController {
       .whereHas('tokens', (query) => {
         query.where('token', token)
       })
+      .preload('tokens')
       .firstOrFail()
 
     findUserByToken.password = password
     await findUserByToken.save()
+    await findUserByToken.tokens[0].delete()
 
     return response.noContent()
   }
