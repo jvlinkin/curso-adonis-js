@@ -52,7 +52,7 @@ test.group('Password', (group) => {
     assert.equal(body.status, 422)
   })
 
-  test.only('it should be able to reset the password', async (assert) => {
+  test('it should be able to reset the password', async (assert) => {
     const user = await UserFactory.create()
     const { token } = await user.related('tokens').create({ token: 'token12345' })
 
@@ -71,6 +71,14 @@ test.group('Password', (group) => {
     //need to verify if password has changed
     const checkPassword = await Hash.verify(user.password, '123456')
     assert.isTrue(checkPassword)
+  })
+
+  //here, we are using the validator on the controller, to validate de data required.
+  test.only('it should return 422 when required data is not provided.', async (assert) => {
+    const { body } = await supertest(BASE_URL).post('/reset-password').send({}).expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
   })
 
   //before each test, it begins a new transaction.
