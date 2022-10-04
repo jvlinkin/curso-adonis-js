@@ -1,9 +1,11 @@
 import Mail from '@ioc:Adonis/Addons/Mail'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import TokenExpiredException from 'App/Exceptions/TokenExpiredException'
 import User from 'App/Models/User'
 import ForgotPasswordValidator from 'App/Validators/ForgotPasswordValidator'
 import ResetPasswordValidator from 'App/Validators/ResetPasswordValidator'
 import crypto from 'crypto'
+import { DateTime } from 'luxon'
 
 export default class PasswordsController {
   public async forgotPassword({ request, response }: HttpContextContract) {
@@ -40,6 +42,20 @@ export default class PasswordsController {
       })
       .preload('tokens')
       .firstOrFail()
+    //that's a strategy you can use, but here we are going to follow the course instructions
+    //const dateNow = DateTime.now()
+    //const tokenHour = await findUserByToken.tokens[0].createdAt
+
+    //if (dateNow > tokenHour) {
+    //  throw new Error('Token has expired.')
+    //}
+
+    //validating if token hasn't expired yet.
+    const tokenAge = Math.abs(findUserByToken.tokens[0].createdAt.diffNow('hours').hours)
+
+    if (tokenAge > 2) {
+      throw new TokenExpiredException()
+    }
 
     findUserByToken.password = password
     await findUserByToken.save()
