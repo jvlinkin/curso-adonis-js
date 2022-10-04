@@ -5,7 +5,6 @@ import User from 'App/Models/User'
 import ForgotPasswordValidator from 'App/Validators/ForgotPasswordValidator'
 import ResetPasswordValidator from 'App/Validators/ResetPasswordValidator'
 import crypto from 'crypto'
-import { DateTime } from 'luxon'
 
 export default class PasswordsController {
   public async forgotPassword({ request, response }: HttpContextContract) {
