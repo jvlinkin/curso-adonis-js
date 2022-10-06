@@ -39,6 +39,20 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         status: 404,
         errors: error['messages']?.errors ? error['messages'].errors : '',
       })
+    } else if (error.code === 'E_INVALID_AUTH_UID') {
+      return ctx.response.status(error.status).send({
+        code: 'BAD_REQUEST',
+        message: 'credentials invalid',
+        status: 400,
+        errors: error['messages']?.errors ? error['messages'].errors : '',
+      })
+    } else if (error.code === 'E_INVALID_AUTH_PASSWORD') {
+      return ctx.response.status(error.status).send({
+        code: 'BAD_REQUEST',
+        message: 'credentials invalid',
+        status: 400,
+        errors: error['messages']?.errors ? error['messages'].errors : '',
+      })
     }
 
     return super.handle(error, ctx)

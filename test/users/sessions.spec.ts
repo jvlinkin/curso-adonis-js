@@ -30,6 +30,33 @@ test.group('Password', (group) => {
     assert.equal(body.user.id, id)
   })
 
+  test('it should return 400 when credentials are not provided.', async (assert) => {
+    const { body } = await supertest(BASE_URL).post('/sessions').send({}).expect(400)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 400)
+    assert.equal(body.message, 'credentials invalid')
+  })
+
+  test('it should return 400 when credentials are incorrect.', async (assert) => {
+    const plainPassword = 'teste'
+    await UserFactory.merge({
+      email: 'teste@teste.com',
+      password: plainPassword,
+    }).create()
+    const { body } = await supertest(BASE_URL)
+      .post('/sessions')
+      .send({
+        email: 'teste@teste.com',
+        password: 'incorrectpassword',
+      })
+      .expect(400)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 400)
+    assert.equal(body.message, 'credentials invalid')
+  })
+
   //before each test, it begins a new transaction.
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
