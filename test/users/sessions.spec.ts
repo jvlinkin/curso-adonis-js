@@ -57,7 +57,7 @@ test.group('Password', (group) => {
     assert.equal(body.message, 'credentials invalid')
   })
 
-  test('it should return 200 when user signs out.', async (assert) => {
+  test('it should return 200 when user signs out.', async () => {
     const plainPassword = 'teste'
     const { email } = await UserFactory.merge({ password: plainPassword }).create()
 
@@ -77,7 +77,7 @@ test.group('Password', (group) => {
       .expect(200)
   })
 
-  test.only('token should be removed after user signs out.', async (assert) => {
+  test('token should be removed after user signs out.', async (assert) => {
     const plainPassword = 'teste'
     const { email } = await UserFactory.merge({ password: plainPassword }).create()
 
@@ -91,16 +91,12 @@ test.group('Password', (group) => {
 
     const apiToken = body.token
 
-    const tokenBeforeSignOut = await Database.query().select('*').from('api_tokens')
-    console.log(tokenBeforeSignOut)
-
     await supertest(BASE_URL)
       .delete('/sessions')
       .set('Authorization', `Bearer ${apiToken.token}`)
       .expect(200)
 
     const tokenAfterSignOut = await Database.query().select('*').from('api_tokens')
-    console.log({ tokenAfterSignOut: tokenAfterSignOut })
 
     assert.isEmpty(tokenAfterSignOut)
   })
