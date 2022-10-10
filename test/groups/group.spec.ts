@@ -6,7 +6,7 @@ import { UserFactory } from 'Database/factories'
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 
 test.group('Group', (group) => {
-  test.only('it should create a table', async (assert) => {
+  test('it should create a group', async (assert) => {
     const user = await UserFactory.create()
     const groupPayLoad = {
       name: 'test',
@@ -25,6 +25,13 @@ test.group('Group', (group) => {
     assert.equal(body.group.location, groupPayLoad.location)
     assert.equal(body.group.chronic, groupPayLoad.chronic)
     assert.equal(body.group.master, groupPayLoad.master)
+  })
+
+  test.only('it should return 422 when required data is not provided.', async (assert) => {
+    const { body } = await supertest(BASE_URL).post('/groups').send({}).expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
   })
 
   //before each test, it begins a new transaction.
