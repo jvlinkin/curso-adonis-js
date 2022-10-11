@@ -25,6 +25,9 @@ test.group('Group', (group) => {
     assert.equal(body.group.location, groupPayLoad.location)
     assert.equal(body.group.chronic, groupPayLoad.chronic)
     assert.equal(body.group.master, groupPayLoad.master)
+    assert.exists(body.group.players, 'Players undefined')
+    assert.equal(body.group.players.length, 1)
+    assert.equal(body.group.players[0].id, groupPayLoad.master)
   })
 
   test.only('it should return 422 when required data is not provided.', async (assert) => {
