@@ -251,6 +251,10 @@ test.group('Users', (group) => {
     user = newUser
   })
 
+  group.after(async () => {
+    await supertest(BASE_URL).delete('/sessions').set('Authorization', `Bearer ${token}`)
+  })
+
   //before each test, it begins a new transaction.
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
