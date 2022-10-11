@@ -7,6 +7,9 @@ export default class GroupsController {
     const groupPayLoad = await request.validate(CreateGroupValidator)
     const group = await Group.create(groupPayLoad)
 
+    await group.related('players').attach([groupPayLoad.master])
+    await group.load('players')
+
     return response.created({ group })
   }
 }
