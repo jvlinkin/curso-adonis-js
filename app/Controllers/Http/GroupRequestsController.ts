@@ -7,6 +7,7 @@ export default class GroupRequestsController {
     const userId = auth.user!.id
 
     const groupRequest = await GroupRequest.create({ groupId, userId })
+    await groupRequest.refresh()
 
     return response.created({ groupRequest })
   }
